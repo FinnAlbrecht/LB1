@@ -9,7 +9,7 @@ Testen:  http://127.0.0.1:5001/login
 """
 
 import sqlite3
-from flask import Flask, request, g
+from flask import Flask, request, g, render_template_string
 
 app = Flask(__name__)
 DATABASE = "demo_vulnerable.db"
@@ -107,6 +107,16 @@ def login_vulnerable():
     </table>
     </body></html>
     """
+    
+
+
+# ❌ VULNERABLE - user input passed directly into render_template_string
+# /greet?name={{config.SECRET_KEY}} , config.items() etc.
+@app.route("/greet")
+def greet():
+    name = request.args.get("name", "")
+    template = f"<h1>Hello, {name}!</h1>"
+    return render_template_string(template)
 
 
 if __name__ == "__main__":

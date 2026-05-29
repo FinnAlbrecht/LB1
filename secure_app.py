@@ -11,7 +11,7 @@ import sqlite3
 import hashlib
 import hmac
 import os
-from flask import Flask, request, g
+from flask import Flask, request, g, render_template
 
 app = Flask(__name__)
 DATABASE = "demo_secure.db"
@@ -127,6 +127,13 @@ def login_secure():
     </table>
     </body></html>
     """
+
+
+# ✅ SAFE option 2 - use a .html template file (preferred)
+@app.route("/greet")
+def greet():
+    name = request.args.get("name", "")
+    return render_template("greet.html", name=name)
 
 
 if __name__ == "__main__":
