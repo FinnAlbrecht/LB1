@@ -9,6 +9,8 @@ Testen:  http://127.0.0.1:5001/login
 """
 
 import sqlite3
+import subprocess
+import os
 from flask import Flask, request, g, render_template_string
 
 app = Flask(__name__)
@@ -117,6 +119,21 @@ def greet():
     name = request.args.get("name", "")
     template = f"<h1>Hello, {name}!</h1>"
     return render_template_string(template)
+
+
+
+
+# ❌ VULNERABLE - shell=True with user input
+@app.route("/ping")
+def ping_host():
+    hostname = request.args.get("host", "")
+    result = subprocess.run(f"ping -c 1 {hostname}", shell=True, capture_output=True, text=True)
+    return result.stdout
+
+# ❌ ALSO VULNERABLE - os.system
+def list_files(directory: str):
+    os.system(f"ls {directory}")
+
 
 
 if __name__ == "__main__":

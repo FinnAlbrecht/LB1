@@ -11,6 +11,8 @@ import sqlite3
 import hashlib
 import hmac
 import os
+import subprocess
+import regex as re
 from flask import Flask, request, g, render_template
 
 app = Flask(__name__)
@@ -134,6 +136,15 @@ def login_secure():
 def greet():
     name = request.args.get("name", "")
     return render_template("greet.html", name=name)
+
+@app.route("/ping")
+def ping():
+    host = request.args.get("host", "")
+    if not re.match(r'^[a-zA-Z0-9.\-]+$', host):
+        return "Invalid host", 400
+    result = subprocess.run(["ping", "-c", "1", host], capture_output=True, text=True)
+    return result.stdout
+
 
 
 if __name__ == "__main__":
